@@ -1,113 +1,109 @@
-# 怒笔（FuryPen）
+# FuryPen (怒笔)
 
-> AI长篇小说一致性写作系统 — 一个真正写完了一本34章小说的 Skill
+> AI Long-Form Novel Consistency Writing System — A skill that actually wrote a 34-chapter novel.
 
-**怒笔（FuryPen）** 是一个基于 WorkBuddy Skill + Memory 架构的长篇小说一致性写作系统。它不是"帮你写一段话"的工具——它是"让AI能写完整本书而不前后矛盾"的系统。
+**FuryPen** is a long-form novel writing system built on the WorkBuddy Skill + Memory architecture. It's not a "help you write a paragraph" tool — it's a system designed to make AI capable of writing a complete novel without contradicting itself.
 
-核心解决三个问题：
-- **上下文窗口装不下全书** → Bible 按需注入，每章只加载当前需要的设定
-- **AI无持久状态** → run-state.md 状态机 + S4 事实提取回写
-- **无一致性闸门** → genre-config 类型定制校验 + S5分层审查 + S8全局终审
+Core problems it solves:
 
-## 架构总览
+- **Context window can't hold a full novel** → Bible on-demand injection, each chapter only loads what it needs
+- **AI has no persistent state** → run-state.md state machine + S4 fact extraction and writeback
+- **No consistency gate** → genre-config type-customized validation + S5 layered review + S8 global audit
+
+## Architecture Overview
 
 ```
-Bible（持久化层）   →   Loop（执行层）   →   Gate（控制层）
-   meta.md                 S2 上下文注入        genre-config
-   characters/             S3 撰写章节           check_priority
-   worldbuilding/          S4 事实提取回写       HARD/SOFT分级
-   foreshadowing.md        S5 一致性审查
-   lorebook.md             S6 场景扩写
-   progression.md          S7 修订重写
-                           S8 全局终审（10维度）
+Bible (Persistence Layer)  →  Loop (Execution Layer)  →  Gate (Control Layer)
+   meta.md                       S2 Context Injection       genre-config
+   characters/                   S3 Chapter Writing          check_priority
+   worldbuilding/                S4 Fact Extraction          HARD/SOFT grading
+   foreshadowing.md              S5 Consistency Review
+   lorebook.md                   S6 Scene Expansion
+   progression.md                S7 Revision & Rewrite
+                                 S8 Global Final Audit (10 dimensions)
 ```
 
-## 8个子Skill一览
+## The 8 Skills at a Glance
 
-| Skill | 功能 | 触发 |
-|-------|------|------|
-| S1 | 小说初始化：热点菜单→Q&A→生成bible | 一次性 |
-| S2 | 上下文注入：按需加载设定→组装提示词 | 每章自动 |
-| S3 | 撰写章节：写前自检→草稿→定稿 | 每章 |
-| S4 | 事实提取回写：8维度→回写bible | 每章/批量 |
-| S5 | 一致性审查：HARD拦截→SOFT放行 | 每章自动 |
-| S6 | 场景扩写：定位→注入→扩写→替换 | 按需 |
-| S7 | 修订重写：定位→注入→局部重写→验证 | 自动/手动 |
-| S8 | 全局终审：10维度跨章节扫描→报告 | 全书完成 |
+| Skill | Function | Trigger |
+|-------|----------|---------|
+| S1 | Novel initialization: hot menu → Q&A → generate bible | One-time |
+| S2 | Context injection: load on-demand → assemble prompt | Per chapter auto |
+| S3 | Write chapter: self-check → draft → finalize | Per chapter |
+| S4 | Fact extraction: 8 dimensions → write back to bible | Per chapter / batch |
+| S5 | Consistency review: HARD block → SOFT release | Per chapter auto |
+| S6 | Scene expansion: locate → inject → expand → replace | On demand |
+| S7 | Revision & rewrite: locate → inject → rewrite → verify | Auto / manual |
+| S8 | Global final audit: 10-dimension cross-chapter scan | Novel complete |
 
-## 核心特色
+## Key Features
 
-- **类型定制一致性闸门（独创）**：规则怪谈/末世生存/都市异能/悬疑推理/通用，每种独立配置check_priority
-- **快速连载模式**：跳过逐章审阅，整本写完再改
-- **草稿/精修两遍**：draft模式速度优先，polish模式质量优先
-- **字数动态适应**：按悬念级别 weight 系数自动调节篇幅
-- **批量伏笔扫描**：全书完成后自动从正文识别伏笔埋设/回收
-- **S8 10维度全局终审**：孤儿伏笔/信息泄漏/规则漂移/角色掉线/命名一致性
+- **Genre-Customized Consistency Gate (Original)**: Rule Horror / Post-Apocalyptic / Urban Supernatural / Mystery / General — each genre has its own check_priority configuration
+- **Fast Batch Mode**: Skip per-chapter review, write the whole book first, revise later
+- **Two-Pass Draft/Polish**: Draft mode prioritizes speed, Polish mode prioritizes quality
+- **Adaptive Chapter Length**: Weight coefficient auto-adjusts word count based on suspense level
+- **Bulk Foreshadowing Scan**: Auto-detect planted/recovered foreshadowing from text after completion
+- **S8 10-Dimension Global Audit**: Orphan foreshadowing / information leaks / rule drift / character absence / naming consistency
 
-## 实战验证
+## Real-World Validation
 
-FuryPen 实际写完了一本 34 章的长篇小说《废品编号007》（又名《愤怒》），约8万字，5卷34章+序幕+尾声。
+FuryPen has written a complete 34-chapter sci-fi novel **"Scrap Number 007"** (also known as **"Fury"**), approximately 80,000 Chinese characters across 5 volumes.
 
-- 全程快速连载模式，无人工干预
-- S8全局终审结果：跨章信息泄漏0处，规则漂移0处，伏笔断裂0处
-- 3轮迭代（v1→v3）全部由实战反馈驱动
+- Full fast batch mode, zero human intervention during writing
+- S8 global audit results: 0 cross-chapter information leaks, 0 rule drifts, 0 broken foreshadowing
+- 3 iterations (v1→v3) all driven by real writing feedback
 
-## 快速开始
+## Quick Start
 
-1. 确保已安装 [WorkBuddy](https://www.codebuddy.cn)
-2. 将本技能目录放置到 `~/.workbuddy/skills/fury-pen/`
-3. 在聊天中输入 `写小说` 触发 S1 初始化流程
-4. 按 Q&A 引导填入设定 → 系统自动生成完整 bible
-5. 输入 `写第1章` → 自动进入 S2→S3→S4→S5 写作循环
+1. Make sure [WorkBuddy](https://www.codebuddy.cn) is installed
+2. Copy this skill directory to `~/.workbuddy/skills/fury-pen/`
+3. Type `写小说` (or "start novel" in Chinese mode) to trigger S1 initialization
+4. Follow the Q&A prompts — the system generates the full bible
+5. Type `写第1章` → auto-enter S2→S3→S4→S5 writing loop
 
-## 目录结构
+## Project Structure
 
 ```
 ~/.workbuddy/skills/fury-pen/
-├── SKILL.md                          # 主流程定义（S1-S8完整步骤）
+├── SKILL.md                          # Main workflow (S1-S8 complete)
+├── README_CN.md                      # Chinese documentation
 ├── references/
-│   ├── hot-directions.md             # 4桶×4子方向热点菜单
-│   ├── context-assembly-template.md   # S2上下文组装模板
-│   ├── extraction-rules.md           # S4 8维度提取规则
-│   ├── consistency-check-rules.md    # S5校验方法
-│   ├── self-check-rules.md           # S3写前自检清单
-│   ├── global-audit-rules.md         # S8 10维度终审规则
-│   ├── outline-extension.md          # 大纲自动续展
-│   ├── foreshadowing-auto-extract.md # 批量伏笔自动提取
-│   └── genre-config/                 # 5个类型配置
-│       ├── 规则怪谈.md
-│       ├── 末世生存.md
-│       ├── 都市异能.md
-│       ├── 悬疑推理.md
-│       └── 通用.md
+│   ├── hot-directions.md             # Hot direction menu (4 categories × 4)
+│   ├── context-assembly-template.md  # S2 context template
+│   ├── extraction-rules.md           # S4 8-dimension extraction rules
+│   ├── consistency-check-rules.md    # S5 validation methods
+│   ├── self-check-rules.md           # S3 pre-write checklist
+│   ├── global-audit-rules.md         # S8 10-dimension audit rules
+│   ├── outline-extension.md          # Auto-outline extension
+│   ├── foreshadowing-auto-extract.md # Bulk foreshadowing auto-extraction
+│   └── genre-config/                 # 5 genre configurations
+│       ├── rule-horror.md
+│       ├── post-apocalyptic.md
+│       ├── urban-supernatural.md
+│       ├── mystery.md
+│       └── general.md
 ├── assets/
-│   ├── bible-templates/              # Bible文件模板（20个）
-│   │   ├── meta.md / core-rules.md / outline.md
-│   │   ├── character.md / character-index.md
-│   │   ├── foreshadowing.md / progression.md
-│   │   ├── lorebook.md / style-guide.md
-│   │   ├── instance.md / instance-index.md
-│   │   ├── world-rules.md / location.md
-│   │   ├── timeline.md / lore.md
-│   │   ├── run-state.md / chapter.md
-│   └── tracking-templates/           # Tracking模板（4个）
-│       ├── progress.md
-│       ├── consistency-log.md
-│       ├── rewrite-history.md
-│       └── global-audit-log.md
+│   ├── bible-templates/              # 20 bible file templates
+│   └── tracking-templates/           # 4 tracking templates
+├── novel/                            # Full novel "Scrap Number 007"
+│   ├── bible/                        # Novel world-building (13 files)
+│   ├── chapters/                     # 35 chapter files (prologue + 34)
+│   └── 废品编号007_全书.txt           # Complete TXT (~80K chars)
+└── 怒笔FuryPen_深度拆解.html          # Deep-dive technical article (Chinese)
 ```
 
-## 设计渊源
+## Design Lineage
 
-取五家之长：
-- **蛙趣拼文** — 8模块结构 + 伏笔追踪 + 角色成长轨迹
-- **NovelCrafter** — Codex百科 + 场景挂载按需注入
-- **NovelAI** — Lorebook关键词触发自动注入
-- **Sudowrite** — 场景扩写/修订重写
-- **AI_NovelGenerator** — 多阶段生成 + 自动一致性检查
+Borrowed from five existing systems:
 
-**独创**：热点方向选择菜单 + 分阶段Q&A引导初始化 + 类型定制一致性闸门
+- **Waqu Pingwen** — 8-module structure + foreshadowing tracking + character growth arcs
+- **NovelCrafter** — Codex (structured wiki) + scene hook on-demand injection
+- **NovelAI** — Lorebook keyword-triggered auto injection
+- **Sudowrite** — Scene expansion / revision rewriting
+- **AI_NovelGenerator** — Multi-stage generation + auto consistency check
 
-## 许可
+**Original innovations**: Hot direction selection menu + staged Q&A guided initialization + genre-customized consistency gate
+
+## License
 
 MIT License
